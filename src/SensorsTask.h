@@ -1,11 +1,6 @@
 #include "GyverFilters.h"
 #include "MultiMap.h"
 
-
-float rsIn[] = { 4, 9, 68,  135, 176,  210, 259, 329, 367, 412, 454, 496, 552, 609, 680, 765, 816, 874, 916, 955, 1011, 1020 };
-float rsOut[] = { 0, 5, 7.5, 10,  12.5, 15,  20,  30,  35,  40,  45,  50,  55,  60,  65,  70,  75,  80,  85,  90,  95,   96 };
-// 19
-
 class SensorsTask : public CustomTask {
 public:
   SensorsTask(bool enabled = false, unsigned long interval = 0) : CustomTask(enabled, interval) {}
@@ -50,12 +45,24 @@ protected:
       }
     }
 
-    double percentage = multiMap<float>(filteredValue, rsIn, rsOut, 22);
+    double percentage = multiMap<float>(
+      filteredValue,
+      rsCalibrationMap[0],
+      rsCalibrationMap[1],
+      sizeof(rsCalibrationMap[0]) / sizeof(float)
+    );
     prevRemainingPercentage = vars.remaining.percentage;
     vars.remaining.percentage = percentage;
     vars.remaining.liters = percentageToLiters(percentage);
 
-    DEBUG_F("Remaining sensor value: %u, calibrated: %u, filtered: %u, percentage: %f, liters: %f\n", sensorValue, calibratedValue, filteredValue, vars.remaining.percentage, vars.remaining.liters);
+    DEBUG_F(
+      "Remaining sensor value: %u, calibrated: %u, filtered: %u, percentage: %f, liters: %f\n",
+      sensorValue,
+      calibratedValue,
+      filteredValue,
+      vars.remaining.percentage,
+      vars.remaining.liters
+    );
   }
 
   void refueling() {

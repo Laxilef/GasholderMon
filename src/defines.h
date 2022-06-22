@@ -13,9 +13,6 @@
 #define REMAINING_FILTER_BUFFER 10
 #define REFUELING_IDLE_INTERVAL 60000
 
-
-
-
 #ifdef USE_TELNET
   #define INFO_STREAM TelnetStream
   #define WARN_STREAM TelnetStream
