@@ -1,6 +1,8 @@
 # GasholderMon
 Monitoring the parameters of your gasholder.
 
+![logo](/assets/logo.jpg)
+
 ## Features
 - Monitoring of the remaining gas in percent and liters using the SRG level gauge ([with hall sensor](https://www.aliexpress.com/item/1005003713504199.html))
 - Detection refueling: saving the number of liters and date
