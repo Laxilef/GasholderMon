@@ -39,3 +39,16 @@ The gasholdermon device will be automatically added to homeassistant if MQTT ser
 2. If the remaining gas percentage is incorrect (less or more), try changing the **Calibration** parameter up or down in increments of 1.
 3. You can also set the service interval. After the service is completed, click on the **Service button** to update the date.
 4. Create automations to notify low gas and service needs.
+
+## Debug & sensor conversion map
+To display DEBUG messages you must enable debug in settings (switch is disabled by default).
+You can connect via Telnet to read messages. IP: esp8266 ip, port: 23
+
+The default conversion map is (Settings.h):
+```
+float rsCalibrationMap[2][22] = {
+  {4, 9, 68,  135, 176,  210, 259, 329, 367, 412, 454, 496, 552, 609, 680, 765, 816, 874, 916, 955, 1011, 1020},
+  {0, 5, 7.5, 10,  12.5, 15,  20,  30,  35,  40,  45,  50,  55,  60,  65,  70,  75,  80,  85,  90,  95,   96}
+};
+```
+The first element of the array is an array of sensor values, the second element of the array is an array of values in percent.
