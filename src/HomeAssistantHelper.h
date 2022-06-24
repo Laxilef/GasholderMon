@@ -125,7 +125,7 @@ public:
     doc["unique_id"] = _prefix + "_remaining_liters";
     doc["object_id"] = _prefix + "_remaining_liters";
     doc["entity_category"] = "diagnostic";
-    doc["device_class"] = "gas";
+    //doc["device_class"] = "gas";
     doc["state_class"] = "measurement";
     doc["unit_of_measurement"] = "liters";
     doc["name"] = "Remaining";
@@ -154,7 +154,7 @@ public:
     doc["unique_id"] = _prefix + "_remaining_percentage";
     doc["object_id"] = _prefix + "_remaining_percentage";
     doc["entity_category"] = "diagnostic";
-    doc["device_class"] = "gas";
+    //doc["device_class"] = "gas";
     doc["state_class"] = "measurement";
     doc["unit_of_measurement"] = "%";
     doc["name"] = "Remaining";
@@ -211,7 +211,7 @@ public:
     doc["unique_id"] = _prefix + "_refueling_liters";
     doc["object_id"] = _prefix + "_refueling_liters";
     doc["entity_category"] = "diagnostic";
-    doc["device_class"] = "gas";
+    //doc["device_class"] = "gas";
     doc["state_class"] = "measurement";
     doc["unit_of_measurement"] = "liters";
     doc["name"] = "Refueling liters";

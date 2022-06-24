@@ -1,5 +1,5 @@
 struct Settings {
-  bool debug = true;
+  bool debug = false;
   char hostname[80] = "gasholdermon";
 
   struct {
