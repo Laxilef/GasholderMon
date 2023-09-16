@@ -122,9 +122,9 @@ protected:
     double percentage = multiMap<float>(
       //filteredValue,
       calibratedValue,
-      rsCalibrationMap[2],
-      rsCalibrationMap[3],
-      sizeof(rsCalibrationMap[2]) / sizeof(float)
+      rsCalibrationMap[0],
+      rsCalibrationMap[1],
+      sizeof(rsCalibrationMap[0]) / sizeof(float)
     );
 
     if ( !vars.remaining.ready || (percentage - vars.remaining.percentage + 0.0001) >= RS_DRIFT_UP_PERCENT || (vars.remaining.percentage - percentage + 0.0001) >= RS_DRIFT_DOWN_PERCENT ) {
