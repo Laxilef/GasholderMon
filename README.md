@@ -23,8 +23,8 @@ Monitoring the parameters of your gasholder.
 - [WiFiManager](https://github.com/tzapu/WiFiManager)
 
 ## PCB
-![pcb sheet](/assets/pcb.svg)
-![pcb 3d](/assets/pcb_3d.png)
+<img src="/assets/pcb.svg" width="40%" /> <img src="/assets/pcb_3d.png" width="40%" />
+
 - [Sheet](/assets/sheet.pdf)
 - [BOM](/assets/BOM.xlsx)
 - [Gerber](/assets/gerber.zip)
