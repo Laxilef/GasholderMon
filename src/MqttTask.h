@@ -8,9 +8,9 @@ PubSubClient client(espClient);
 HomeAssistantHelper haHelper;
 
 
-class MqttTask : public CustomTask {
+class MqttTask : public Task {
 public:
-  MqttTask(bool enabled = false, unsigned long interval = 0) : CustomTask(enabled, interval) {}
+  MqttTask(bool _enabled = false, unsigned long _interval = 0) : Task(_enabled, _interval) {}
 
 protected:
   unsigned long lastReconnectAttempt = 0;
@@ -20,6 +20,9 @@ protected:
     client.setCallback(__callback);
     haHelper.setPrefix(settings.mqtt.prefix);
     haHelper.setDeviceVersion(GASHOLDERMON_VERSION);
+
+    sprintf(buffer, CONFIG_URL, WiFi.localIP().toString().c_str());
+    haHelper.setDeviceConfigUrl(buffer);
   }
 
   void loop() {
@@ -78,8 +81,8 @@ protected:
       flag = true;
     }
 
-    if (!doc["capacity"]["calibration"].isNull() && doc["capacity"]["calibration"].is<short>() && doc["capacity"]["calibration"].as<short>() >= -32768 && doc["capacity"]["calibration"].as<short>() <= 32767) {
-      settings.capacity.calibration = doc["capacity"]["calibration"].as<short>();
+    if (!doc["capacity"]["calibration"].isNull() && doc["capacity"]["calibration"].is<double>() && doc["capacity"]["calibration"].as<double>() >= 0 && doc["capacity"]["calibration"].as<double>() < 2) {
+      settings.capacity.calibration = round(doc["capacity"]["calibration"].as<double>() * 100) / 100;
       flag = true;
     }
 
@@ -91,6 +94,18 @@ protected:
 
     if (!doc["refueling"]["date"].isNull() && doc["refueling"]["date"].is<unsigned long>() && doc["refueling"]["date"].as<unsigned long>() >= 0) {
       settings.refueling.date = doc["refueling"]["date"].as<unsigned long>();
+      flag = true;
+    }
+
+    // counter
+    if (!doc["counter"]["liters"].isNull() && doc["counter"]["liters"].is<unsigned long>() && doc["counter"]["liters"].as<unsigned long>() >= 0) {
+      settings.counter.liters = doc["counter"]["liters"].as<unsigned short>();
+      vars.counter.liters = settings.counter.liters;
+      flag = true;
+    }
+
+    if (!doc["counter"]["m3ratio"].isNull() && doc["counter"]["m3ratio"].is<double>() && doc["counter"]["m3ratio"].as<double>() >= 0) {
+      settings.counter.m3ratio = round(doc["counter"]["m3ratio"].as<double>() * 100) / 100;
       flag = true;
     }
 
@@ -175,11 +190,18 @@ protected:
     haHelper.publishSensorRefuelingLiters();
     haHelper.publishSensorRefuelingDate();
 
+    // counter
+    haHelper.publishNumberCounterM3ratio();
+    haHelper.publishSensorCounterLiters();
+    haHelper.publishSensorCounterM3();
+
     // service
     haHelper.publishButtonServiceRun();
     haHelper.publishNumberServiceInterval();
     haHelper.publishSensorServiceDate();
     haHelper.publishBinSensorServiceRequired();
+    haHelper.publishBinSensorMoisture();
+    haHelper.publishSensorRssi();
   }
 
   static bool publishSettings(const char* topic) {
@@ -192,6 +214,9 @@ protected:
 
     doc["refueling"]["liters"] = settings.refueling.liters;
     doc["refueling"]["date"] = settings.refueling.date;
+
+    doc["counter"]["liters"] = settings.counter.liters;
+    doc["counter"]["m3ratio"] = settings.counter.m3ratio;
 
     doc["service"]["interval"] = settings.service.interval;
     doc["service"]["date"] = settings.service.date;
@@ -212,7 +237,13 @@ protected:
     doc["remaining"]["percentage"] = vars.remaining.percentage;
 
     doc["refueling"]["process"] = vars.refueling.process;
+
+    doc["counter"]["liters"] = vars.counter.liters;
+    doc["counter"]["m3"] = vars.counter.m3;
+
     doc["service"]["required"] = vars.service.required;
+    doc["service"]["moisture"] = vars.service.moisture;
+    doc["service"]["rssi"] = vars.service.rssi;
 
     client.beginPublish(topic, measureJson(doc), false);
     //BufferingPrint bufferedClient(client, 32);
@@ -233,7 +264,7 @@ protected:
 
     if (settings.debug) {
       DEBUG_F("MQTT received message\n\r        Topic: %s\n\r        Data: ", topic);
-      for (int i = 0; i < length; i++) {
+      for (unsigned int i = 0; i < length; i++) {
         DEBUG_STREAM.print((char)payload[i]);
       }
       DEBUG_STREAM.print("\n");

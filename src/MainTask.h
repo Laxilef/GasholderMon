@@ -1,6 +1,8 @@
-class MainTask : public CustomTask {
+extern MqttTask* tMqtt;
+
+class MainTask : public LeanTask {
 public:
-  MainTask(bool enabled = false, unsigned long interval = 0) : CustomTask(enabled, interval) {}
+  MainTask(bool _enabled = false, unsigned long _interval = 0) : LeanTask(_enabled, _interval) {}
 
 protected:
   void setup() {}
@@ -15,6 +17,8 @@ protected:
 
     if (WiFi.status() == WL_CONNECTED) {
       timeClient.update();
+
+      vars.service.rssi = WiFi.RSSI();
     }
 
     if (WiFi.status() == WL_CONNECTED && !tMqtt->isEnabled()) {
@@ -25,8 +29,6 @@ protected:
     }
 
 #ifdef USE_TELNET
-    yield();
-
     // anti memory leak
     TelnetStream.flush();
     while (TelnetStream.available() > 0) {
@@ -42,14 +44,10 @@ protected:
         minFreeHeapSizeDiff = minFreeHeapSize - freeHeapSize;
         minFreeHeapSize = freeHeapSize;
       }
-      if (millis() - lastHeapInfo > 10000 || minFreeHeapSizeDiff > 0) {
+      if (millis() - lastHeapInfo > 60000 || minFreeHeapSizeDiff > 0) {
         DEBUG_F("Free heap size: %hu bytes, min: %hu bytes (diff: %hu bytes)\n", freeHeapSize, minFreeHeapSize, minFreeHeapSizeDiff);
         lastHeapInfo = millis();
       }
     }
   }
-
-  /*char[] getUptime() {
-    uint64_t =  esp_timer_get_time();
-  }*/
 };
